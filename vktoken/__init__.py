@@ -23,7 +23,7 @@ class App:
 
 class ArgumentParser(argparse.ArgumentParser):
     def __init__(self):
-        super().__init__(description="Tool for quick getting of vk access token")
+        super().__init__(description="Tool for creating VK access token")
         self.add_argument("login", type=str, help="your login")
         self.add_argument("password", type=str, help="your password", nargs="?")
         self.add_argument(
@@ -43,5 +43,8 @@ class ArgumentParser(argparse.ArgumentParser):
         )
 
         self.add_argument(
-            "-v", "--version", action="version", version=f"vktoken {__version__}"
+            "-v",
+            "--version",
+            action="version",
+            version=f"vktoken version {__version__}",
         )

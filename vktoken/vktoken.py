@@ -1,5 +1,7 @@
+import getpass
 import json
 import requests
+import pyperclip
 import vktoken
 
 
@@ -8,8 +10,6 @@ def main():
     app = vktoken.App(name=arguments.app)
 
     if not arguments.password:
-        import getpass
-
         arguments.password = getpass.getpass("Enter your password: ")
 
     try:
@@ -22,14 +22,13 @@ def main():
             f"&password={arguments.password}"
         ).json()
         access_token = response.get("access_token")
+
         if access_token:
             print(f"Access token: {access_token}")
 
             if arguments.copy:
-                import pyperclip
-
                 pyperclip.copy(access_token)
-                print("Access token was copied into clipboard")
+                print("Access token has been copied to the clipboard")
 
         else:
             error_description = response.get("error_description")
