@@ -11,6 +11,7 @@ setup(
     author="jieggii",
     license="GPL-3.0",
     python_requires=">=3.6",
+    install_requires=["requests", "pyperclip"],
     version=version,
     description="",
     long_description=long_description,
