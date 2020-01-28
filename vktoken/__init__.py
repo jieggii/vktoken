@@ -39,7 +39,7 @@ class ArgumentParser(argparse.ArgumentParser):
             "-cp",
             "--copy",
             action="store_true",
-            help="copy access token into clipboard",
+            help="copy access token to clipboard",
         )
 
         self.add_argument(
