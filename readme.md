@@ -1,7 +1,5 @@
 # vktoken
 A tool for getting VK access token
-![preview](https://imgur.com/xxbplGF.jpg)
-
 
 ## Install:
 `pip install vktoken`

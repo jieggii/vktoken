@@ -6,7 +6,7 @@ import sys
 import pyperclip
 import requests
 
-import vktoken
+from vktoken import __version__
 
 apps = {
     "android": {"client_id": 2274003, "client_secret": "hHbZxrka2uZ6jB1inYsH"},
@@ -25,7 +25,10 @@ def parse_args():
         "-cp", "--copy", action="store_true", help="copy access token to clipboard",
     )
     parser.add_argument(
-        "-v", "--version", action="version", version=f"vktoken {vktoken.__version__}",
+        "-v", "--version", action="version", version=f"vktoken {__version__}",
+    )
+    parser.add_argument(
+        "-q", "--quiet", action="store_true", help="disable any output (except errors)"
     )
     parser.add_argument("login", type=str, help="your login")
     parser.add_argument("password", type=str, help="your password", nargs="?")
@@ -69,12 +72,14 @@ def main():
     access_token = response.get("access_token")
 
     if access_token:
-        print(f"Access token: {access_token}")
+        if not arguments.quiet:
+            print(f"Access token: {access_token}")
 
         if arguments.copy:
             try:
                 pyperclip.copy(access_token)
-                print("Access token has been copied to clipboard")
+                if not arguments.quiet:
+                    print("Access token has been copied to clipboard")
 
             except pyperclip.PyperclipException as exception:
                 print(f"Error: {exception}")

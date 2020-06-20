@@ -1,5 +1,3 @@
 fmt:
-	isort -y && black .
-
-install:
-	python setup.py install
+	poetry run isort -y
+	poetry run black .

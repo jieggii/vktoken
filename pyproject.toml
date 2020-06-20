@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "vktoken"
+version = "1.0.2"
+description = "A tool for getting VK access token"
+authors = ["jieggii <jieggii.contact@gmail.com>"]
+license = "MIT"
+readme = "readme.md"
+homepage = "https://github.com/jieggii/vktoken"
+repository = "https://github.com/jieggii/vktoken"
+keywords = [
+        "vk",
+        "vkontakte",
+]
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/jieggii/vktoken/issues"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pyperclip = "^1.8.0"
+requests = "^2.24.0"
+
+[tool.poetry.dev-dependencies]
+isort = "^4.3.21"
+black = "^19.10b0"
+
+[tool.poetry.scripts]
+vktoken = 'vktoken.main:main'
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
