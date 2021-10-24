@@ -1,55 +1,52 @@
 import argparse
 import getpass
 import json
-import sys
 
-import pyperclip
 import requests
 
 from vktoken import __version__
+from vktoken.log import log_error, log_info
 
 apps = {
     "android": {"client_id": 2274003, "client_secret": "hHbZxrka2uZ6jB1inYsH"},
     "iphone": {"client_id": 3140623, "client_secret": "VeWdmVclDCtn6ihuP1nt"},
     "ipad": {"client_id": 3682744, "client_secret": "mY6CDUswIVdJLCD3j15n"},
     "windows-phone": {"client_id": 3502557, "client_secret": "PEObAuQi6KloPM4T30DV"},
-    "desktop": {"client_id": 3697615, "client_secret": "AlVXZFMUqyrnABp8ncuU"},
 }
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="A tool for getting VK access token", prog="vktoken"
+        description="Simple tool for getting VK access token", prog="vktoken",
     )
     parser.add_argument(
-        "-cp", "--copy", action="store_true", help="copy access token to clipboard",
+        "-V", "--version", action="version", version=f"%(prog)s {__version__}",
     )
     parser.add_argument(
-        "-v", "--version", action="version", version=f"vktoken {__version__}",
+        "login", type=str, help="VK account login (mobile phone or email)"
     )
     parser.add_argument(
-        "-q", "--quiet", action="store_true", help="disable any output (except errors)"
-    )
-    parser.add_argument("login", type=str, help="your login")
-    parser.add_argument("password", type=str, help="your password", nargs="?")
-    parser.add_argument(
-        "app",
+        "password",
         type=str,
-        choices=[key for key in apps],
-        default="desktop",
-        help="preferred app",
+        help="VK account password (will be prompted safely if not indicated)",
         nargs="?",
     )
-
+    parser.add_argument(
+        "--app",
+        type=str,
+        choices=[key for key in apps.keys()],
+        default="android",
+        help="app to be used to auth",
+        nargs="?",
+    )
     return parser.parse_args()
 
 
 def main():
-    arguments = parse_args()
-    app = apps[arguments.app]
-
-    if not arguments.password:
-        arguments.password = getpass.getpass("Enter your password: ")
+    args = parse_args()
+    app = apps[args.app]
+    if not args.password:
+        args.password = getpass.getpass("Password: ")
 
     try:
         response = requests.get(
@@ -57,38 +54,32 @@ def main():
             "?grant_type=password"
             f"&client_id={app['client_id']}"
             f"&client_secret={app['client_secret']}"
-            f"&username={arguments.login}"
-            f"&password={arguments.password}"
+            f"&username={args.login}"
+            f"&password={args.password}"
         ).json()
+        access_token = response.get("access_token")
+        if access_token:
+            log_info(access_token)
+        else:
+            error_description = response.get("error_description")
+            if error_description:
+                log_error(error_description.lower(), fatal=True)
+            else:
+                log_error(response.get("error").lower(), fatal=True)
 
     except requests.exceptions.ConnectionError:
-        print("Unable to send request. Please check your internet connection")
-        sys.exit(-1)
+        log_error(
+            "unable to send request. Please check your internet connection", fatal=True
+        )
 
     except json.JSONDecodeError:
-        print("Invalid response of the server")
-        sys.exit(-1)
+        log_error(
+            f"invalid response of the server: {response.text.lower()}", fatal=True  # noqa
+        )
 
-    access_token = response.get("access_token")
+    except Exception as err:
+        log_error(f"unexpected error: {err}")
 
-    if access_token:
-        if not arguments.quiet:
-            print(f"Access token: {access_token}")
 
-        if arguments.copy:
-            try:
-                pyperclip.copy(access_token)
-                if not arguments.quiet:
-                    print("Access token has been copied to clipboard")
-
-            except pyperclip.PyperclipException as exception:
-                print(f"Error: {exception}")
-
-    else:
-        error_description = response.get("error_description")
-
-        if error_description:
-            print(f"Error: {error_description}")
-
-        else:
-            print(f"Error: {response.get('error')}")
+if __name__ == "__main__":
+    main()
