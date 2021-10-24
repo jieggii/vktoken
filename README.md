@@ -8,8 +8,8 @@ Simple tool for getting VK access token
 `vktoken [--help] [--version] [--app] login [password]`
 
 ## Examples
-* `vktoken +12025550178`  
-* `vktoken --copy +12025550178  "MyPassword" iphone` 
+* `vktoken +79652331167`  
+* `vktoken --app iphone +79523311167 mypassword` 
 
 ## Features
-* You can choose any VK app from the list: `android`, `iphone`, `ipad`, `windows-phone` and `desktop`
+* You can choose VK app from the list: `android`, `iphone`, `ipad` and `windows-phone`.
