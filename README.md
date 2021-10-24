@@ -2,7 +2,7 @@
 Simple tool for getting VK access token
 
 ## Installation
-`pip install vktoken`
+`pip install --user vktoken`
 
 ## Usage
 `vktoken [--help] [--version] [--app] login [password]`
