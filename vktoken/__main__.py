@@ -78,7 +78,7 @@ def main():
         )
 
     except Exception as err:
-        log_error(f"unexpected error: {err}")
+        log_error(f"unexpected error: {err}", fatal=True)
 
 
 if __name__ == "__main__":
