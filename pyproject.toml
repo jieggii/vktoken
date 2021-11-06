@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "vktoken"
-version = "2.0.1"
-description = "Simple tool for getting VK access token"
+version = "2.1.0"
+description = "Tool for getting VK access token"
 authors = ["jieggii <jieggii.contact@gmail.com>"]
 license = "MIT"
 readme = "README.md"
@@ -20,8 +20,9 @@ python = "^3.8"
 requests = "^2.26.0"
 
 [tool.poetry.dev-dependencies]
-isort = "^4.3.21"
-black = "^19.10b0"
+flake8 = "^4.0.1"
+isort = "^5.10.0"
+black = "^21.10b0"
 
 [tool.poetry.scripts]
 vktoken = 'vktoken.__main__:main'
