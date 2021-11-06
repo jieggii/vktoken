@@ -1,50 +1,32 @@
-import argparse
 import getpass
 import json
+from operator import xor
 
 import requests
 
-from vktoken import __version__
-from vktoken.log import log_error, log_info
-
-apps = {
-    "android": {"client_id": 2274003, "client_secret": "hHbZxrka2uZ6jB1inYsH"},
-    "iphone": {"client_id": 3140623, "client_secret": "VeWdmVclDCtn6ihuP1nt"},
-    "ipad": {"client_id": 3682744, "client_secret": "mY6CDUswIVdJLCD3j15n"},
-    "windows-phone": {"client_id": 3502557, "client_secret": "PEObAuQi6KloPM4T30DV"},
-}
-
-
-def parse_args():
-    parser = argparse.ArgumentParser(
-        description="Simple tool for getting VK access token", prog="vktoken",
-    )
-    parser.add_argument(
-        "-V", "--version", action="version", version=f"%(prog)s {__version__}",
-    )
-    parser.add_argument(
-        "login", type=str, help="VK account login (mobile phone or email)"
-    )
-    parser.add_argument(
-        "password",
-        type=str,
-        help="VK account password (will be prompted safely if not indicated)",
-        nargs="?",
-    )
-    parser.add_argument(
-        "--app",
-        type=str,
-        choices=[key for key in apps.keys()],
-        default="android",
-        help="app to be used to auth",
-        nargs="?",
-    )
-    return parser.parse_args()
+from vktoken import BUILTIN_APPS
+from vktoken.cli.args import get_arg_parser
+from vktoken.cli.log import log_error, log_info
 
 
 def main():
-    args = parse_args()
-    app = apps[args.app]
+    parser = get_arg_parser()
+    args = parser.parse_args()
+
+    if not args.app and not (args.client_id or args.client_secret):
+        parser.error("you should use --app or --client-id and --client-secret keys")
+
+    if args.app and (args.client_id or args.client_secret):
+        parser.error("you can't use --app and --client-id or --client-secret at once")
+
+    if not args.app and xor(bool(args.client_id), bool(args.client_secret)):
+        parser.error("you must use both --client-id and --client-secret keys")
+
+    if args.app:
+        app = BUILTIN_APPS[args.app]
+    else:
+        app = {"client_id": args.client_id, "client_secret": args.client_secret}
+
     if not args.password:
         args.password = getpass.getpass("Password: ")
 
@@ -74,7 +56,8 @@ def main():
 
     except json.JSONDecodeError:
         log_error(
-            f"invalid response of the server: {response.text.lower()}", fatal=True  # noqa
+            f"invalid response of the server: {response.text.lower()}",  # noqa
+            fatal=True,
         )
 
     except Exception as err:
