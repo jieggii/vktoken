@@ -1,15 +1,16 @@
 # vktoken
-Simple tool for getting VK access token
+Tool for getting VK access token.
 
 ## Installation
 `pip install --user vktoken`
 
 ## Usage
-`vktoken [--help] [--version] [--app] login [password]`
+`vktoken [--help] [--version] [--app] [--client-id] [--client-secret] login [password]`
 
 ## Examples
 * `vktoken +79652331167`  
-* `vktoken --app iphone +79523311167 mypassword` 
+* `vktoken --app iphone +79523311167 mypassword`
+* `vktoken --client-id 3140623 --client-secret VeWdmVclDCtn6ihuP1nt +79523311167`
 
 ## Features
-* You can choose VK app from the list: `android`, `iphone`, `ipad` and `windows-phone`.
+* You can choose builtin VK app credentials from the list: `android`, `iphone`, `ipad` and `windows-phone`.
