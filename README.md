@@ -1,5 +1,6 @@
 # vktoken
 Tool for getting VK access token.
+[![preview](https://asciinema.org/a/oZXWlLuODZ9K78KVNFKLdAmem.svg)](https://asciinema.org/a/oZXWlLuODZ9K78KVNFKLdAmem)
 
 ## Installation
 `pip install --user vktoken`
