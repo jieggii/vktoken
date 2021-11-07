@@ -14,9 +14,7 @@ def get_arg_parser():
         action="version",
         version=f"%(prog)s {__version__}",
     )
-    parser.add_argument(
-        "login", type=str, help="VK account login (mobile phone or email)"
-    )
+    parser.add_argument("login", type=str, help="VK account login (mobile phone or email)")
     parser.add_argument(
         "password",
         type=str,
@@ -35,8 +33,6 @@ def get_arg_parser():
         "app arguments (can't be used if `--app` was used; must be used both at once)"
     )
     app.add_argument("-cid", "--client-id", type=str, nargs="?", help="app client id")
-    app.add_argument(
-        "-cs", "--client-secret", type=str, nargs="?", help="app client secret"
-    )
+    app.add_argument("-cs", "--client-secret", type=str, nargs="?", help="app client secret")
 
     return parser

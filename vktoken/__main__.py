@@ -5,6 +5,7 @@ from operator import xor
 import requests
 
 from vktoken import BUILTIN_APPS
+from vktoken.app import App
 from vktoken.cli.args import get_arg_parser
 from vktoken.cli.log import log_error, log_info
 
@@ -25,7 +26,7 @@ def main():
     if args.app:
         app = BUILTIN_APPS[args.app]
     else:
-        app = {"client_id": args.client_id, "client_secret": args.client_secret}
+        app = App(client_id=args.client_id, client_secret=args.client_secret)
 
     if not args.password:
         args.password = getpass.getpass("Password: ")
@@ -34,8 +35,8 @@ def main():
         response = requests.get(
             "https://oauth.vk.com/token"
             "?grant_type=password"
-            f"&client_id={app['client_id']}"
-            f"&client_secret={app['client_secret']}"
+            f"&client_id={app.client_id}"
+            f"&client_secret={app.client_secret}"
             f"&username={args.login}"
             f"&password={args.password}"
         ).json()
@@ -50,9 +51,7 @@ def main():
                 log_error(response.get("error").lower(), fatal=True)
 
     except requests.exceptions.ConnectionError:
-        log_error(
-            "unable to send request. Please check your internet connection", fatal=True
-        )
+        log_error("unable to send request. Please check your internet connection", fatal=True)
 
     except json.JSONDecodeError:
         log_error(
