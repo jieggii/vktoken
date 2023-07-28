@@ -1,7 +1,7 @@
 [project]
 name = "vktoken"
-version = "2.2.0"
-description = "Tool for getting VK access token"
+version = "3.0.0"
+description = "Tool for granting VK access token"
 authors = [
     {name = "jieggii", email = "jieggii@protonmail.com"},
 ]
@@ -19,7 +19,7 @@ keywords = [
 ]
 
 [project.scripts]
-vktoken = "vktoken:__main__:main"
+vktoken = "vktoken.__main__:main"
 
 [build-system]
 requires = ["pdm-backend"]

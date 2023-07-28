@@ -1,5 +1,5 @@
 # vktoken
-Tool for getting VK access token.
+Tool for granting VK access token.
 [![preview](https://asciinema.org/a/nnP04X2a4jlKzCBIKHaN0HDVY.svg)](https://asciinema.org/a/nnP04X2a4jlKzCBIKHaN0HDVY)
 
 ## Installation

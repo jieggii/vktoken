@@ -1,17 +1,63 @@
 import getpass
 import json
+import sys
+import webbrowser
+from argparse import ArgumentParser
 from operator import xor
 
 import requests
 
-from vktoken import BUILTIN_APPS
+from vktoken import __version__
 from vktoken.app import App
-from vktoken.cli.args import get_arg_parser
-from vktoken.cli.log import log_error, log_info
+
+BUILTIN_APPS = {
+    "android": App(client_id=2274003, client_secret="hHbZxrka2uZ6jB1inYsH"),
+    "iphone": App(client_id=3140623, client_secret="VeWdmVclDCtn6ihuP1nt"),
+    "ipad": App(client_id=3682744, client_secret="mY6CDUswIVdJLCD3j15n"),
+    "windows-phone": App(client_id=3502557, client_secret="PEObAuQi6KloPM4T30DV"),
+}
+FAILURE_EXIT_CODE = 1
 
 
-def main():
-    parser = get_arg_parser()
+def log_error(message: str) -> None:
+    print(f"Error: {message}.", file=sys.stdout)
+
+
+def create_argument_parser() -> ArgumentParser:
+    parser = ArgumentParser(
+        description="Tool for getting VK access token.",
+        prog="vktoken",
+    )
+    parser.add_argument(
+        "-V",
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
+    )
+    parser.add_argument("login", type=str, help="VK account login (mobile phone or email)")
+    parser.add_argument(
+        "password",
+        type=str,
+        help="VK account password (will be prompted safely if not indicated)",
+        nargs="?",
+    )
+    parser.add_argument(
+        "--app",
+        type=str,
+        choices=BUILTIN_APPS.keys(),
+        help="builtin app to be used to auth",
+        nargs="?",
+    )
+
+    app = parser.add_argument_group("app arguments (can't be used if `--app` was used; must be used both at once)")
+    app.add_argument("-cid", "--client-id", type=str, nargs="?", help="app client id")
+    app.add_argument("-cs", "--client-secret", type=str, nargs="?", help="app client secret")
+
+    return parser
+
+
+def main() -> None:
+    parser = create_argument_parser()
     args = parser.parse_args()
 
     if not args.app and not (args.client_id or args.client_secret):
@@ -39,29 +85,42 @@ def main():
             f"&client_secret={app.client_secret}"
             f"&username={args.login}"
             f"&password={args.password}"
-        ).json()
-        access_token = response.get("access_token")
-        if access_token:
-            log_info(access_token)
-        else:
-            error_description = response.get("error_description")
-            if error_description:
-                log_error(error_description.lower(), fatal=True)
-            else:
-                log_error(response.get("error").lower(), fatal=True)
-
-    except requests.exceptions.ConnectionError:
-        log_error("unable to send request. Please check your internet connection", fatal=True)
-
-    except json.JSONDecodeError:
-        log_error(
-            f"invalid response of the server: {response.text.lower()}",  # noqa
-            fatal=True,
         )
+    except requests.exceptions.ConnectionError:
+        log_error("unable to send HTTP request. Please check your internet connection")
+        sys.exit(FAILURE_EXIT_CODE)
 
-    except Exception as err:
-        log_error(f"unexpected error: {err}", fatal=True)
+    try:
+        response_json = response.json()
+    except json.JSONDecodeError:
+        log_error(f"invalid response of the server ({response.text})")
+        sys.exit(FAILURE_EXIT_CODE)
+
+    access_token = response_json.get("access_token")
+    if access_token:
+        print(access_token)
+    else:
+        error = response_json["error"]
+        error_description = response_json.get("error_description")
+
+        if error == "need_validation":
+            uri = response_json["redirect_uri"]
+            print(
+                "Validation is required. Please visit the following URI using your web browser:\n"
+                f"{uri}\n\n"
+                "You will be able to copy access token from the URL bar of your web browser "
+                "after submitting code you received from the VK."
+            )
+            webbrowser.open(uri)
+
+        else:
+            log_error(f"{error}{f' ({error_description})' if error_description else ''}")
+            sys.exit(FAILURE_EXIT_CODE)
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("Aborted!\n")
+        sys.exit()
