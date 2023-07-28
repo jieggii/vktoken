@@ -29,9 +29,7 @@ def get_arg_parser():
         nargs="?",
     )
 
-    app = parser.add_argument_group(
-        "app arguments (can't be used if `--app` was used; must be used both at once)"
-    )
+    app = parser.add_argument_group("app arguments (can't be used if `--app` was used; must be used both at once)")
     app.add_argument("-cid", "--client-id", type=str, nargs="?", help="app client id")
     app.add_argument("-cs", "--client-secret", type=str, nargs="?", help="app client secret")
 
