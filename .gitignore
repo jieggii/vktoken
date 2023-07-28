@@ -1,6 +1,5 @@
-.idea/
-build/
-dist/
-vktoken.egg-info/
+__pypackages__
 __pycache__
-poetry.lock
+.idea/
+.pdm-build
+.pdm-python
